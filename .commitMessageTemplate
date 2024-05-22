@@ -1,0 +1,27 @@
+TYPE: TITLE
+
+# This commit Resolved #issue-number
+
+BODY
+
+###################################
+##      example of TYPES        ###
+###################################
+##
+## - feat: 새로운 기능 추가
+## - update: 간단한 코드 개선(가독성, 중복방지 등)
+## - refactor: 동일 기능을 새로운 방식으로 구현
+## - visual: 비주얼 디자인(css 등)
+## - fix: 버그 수정
+## - cicd: 배포 관련
+## - doc: 문서화(README.md 등)
+## - etc: 기타 잡다구리
+##
+## * (다수 프로젝트를 모아둔)mono-repo의 경우
+##
+## prefix로 [project name]을 추가한다.
+##
+## ex) [api-server]feat: user 라우터 추가
+##
+###################################
+###################################
