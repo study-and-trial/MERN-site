@@ -1,5 +1,19 @@
 services:
+  dev-db:
+    container_name: dev-db
+    build:
+      context: ../DB/
+      dockerfile: Dockerfile.dev
+    # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
+    restart: unless-stopped
+    env_file:
+      - ./env/.env.DB.dev
+    expose:
+      - 3306
+
   dev-backend:
+    depends_on:
+      - dev-db
     container_name: dev-backend
     build:
       context: ../backend/
@@ -18,5 +32,6 @@ services:
       - NODE_ENV=development
     ports:
       - 5001:5001
+    # client server가 뚫리면 바꿔주자.
     # expose:
     #   - 5001
