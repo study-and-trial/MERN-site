@@ -8,17 +8,25 @@
 ├── .github
 │   └── workflows
 │       └── deploy.yml
-├── docker-compose.dev.yml
-├── docker-compose.localBuild.yml
-├── docker-compose.serverDeploy.yml
+├── dev-ops
+│   ├── env
+│   │   ├── .env.dev
+│   │   └── .env.prod
+│   ├── docker-compose.dev.yml
+│   ├── docker-compose.localBuild.yml
+│   ├── docker-compose.serverDeploy.yml
+│   └── ...
 ├── backend
-│   ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
 │   └── ...
 ├── db
-│   ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
 │   └── ...
 └── frontend
-    ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
     └── ...
 ```
 

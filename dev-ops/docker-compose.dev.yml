@@ -2,7 +2,7 @@ services:
   dev-backend:
     container_name: dev-backend
     build:
-      context: ./backend/
+      context: ../backend/
       dockerfile: Dockerfile.dev
     command: npm run dev
     restart: unless-stopped
@@ -10,10 +10,10 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./backend/
+          path: ../backend/
           target: /app/
           ignore:
-            - ./backend/node_modules
+            - ../backend/node_modules
     environment:
       - NODE_ENV=development
     ports:
