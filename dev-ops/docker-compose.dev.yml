@@ -10,6 +10,10 @@ services:
       - ./env/.env.DB.dev
     expose:
       - 3306
+    develop:
+      watch:
+        - action: rebuild
+          path: ../DB/
 
   dev-backend:
     depends_on:
@@ -20,6 +24,15 @@ services:
       dockerfile: Dockerfile.dev
     command: npm run dev
     restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./env/.env.backend.dev
+    ports:
+      - 5001:5001
+    # client server가 뚫리면 바꿔주자.
+    # expose:
+    #   - 5001
     # https://docs.docker.com/compose/file-watch/
     develop:
       watch:
@@ -28,10 +41,3 @@ services:
           target: /app/
           ignore:
             - ../backend/node_modules
-    environment:
-      - NODE_ENV=development
-    ports:
-      - 5001:5001
-    # client server가 뚫리면 바꿔주자.
-    # expose:
-    #   - 5001

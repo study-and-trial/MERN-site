@@ -10,7 +10,8 @@ choose_action() {
   echo -e "  1. Up (build and watch)"
   echo -e "  2. Down"
   echo -e "  3. Restart (donw and up)"
-  echo -e "  4. Status of Projects, Containers\n"
+  echo -e "  4. Status of Projects, Containers"
+  echo -e "  5. Watch\n"
   read -p "Enter your choice: " choice
   echo -e ""
 
@@ -32,6 +33,10 @@ choose_action() {
       docker compose ls --all --filter name=$PROJECT_NAME
       echo -e ""
       docker compose -p $PROJECT_NAME ps --all
+      choose_action
+      ;;
+    5)
+      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE watch
       choose_action
       ;;
     *)
