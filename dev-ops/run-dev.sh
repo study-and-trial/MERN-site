@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROJECT_NAME="dev-fbd-site"
-CONFIG_FILE="docker-compose.dev.yml"
+CONFIG_FILE="dev.docker-compose.yml"
 UP_OPTIONS="--build --watch"
 
 

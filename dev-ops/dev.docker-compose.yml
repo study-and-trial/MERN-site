@@ -3,11 +3,11 @@ services:
     container_name: dev-db
     build:
       context: ../DB/
-      dockerfile: Dockerfile.dev
+      dockerfile: dev.Dockerfile
     # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
     env_file:
-      - ./env/.env.DB.dev
+      - ./env/.dev.DB.env
     expose:
       - 3306
     develop:
@@ -20,14 +20,14 @@ services:
       - dev-db
     container_name: dev-backend
     build:
-      context: ../backend/
-      dockerfile: Dockerfile.dev
+      context: ../BE/
+      dockerfile: dev.Dockerfile
     command: npm run dev
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./env/.env.backend.dev
+      - ./env/.dev.BE.env
     ports:
       - 5001:5001
     # client server가 뚫리면 바꿔주자.
@@ -37,7 +37,7 @@ services:
     develop:
       watch:
         - action: sync
-          path: ../backend/
+          path: ../BE/
           target: /app/
           ignore:
-            - ../backend/node_modules
+            - ../BE/node_modules
