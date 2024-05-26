@@ -53,8 +53,8 @@ services:
     restart: unless-stopped
     # environment:
     #   - NODE_ENV=development
-    # env_file:
-    #   - ./env/.dev.FE.env
+    env_file:
+      - ./env/.dev.FE.env
     ports:
       - 5000:5000
     develop:
