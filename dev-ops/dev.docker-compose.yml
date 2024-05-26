@@ -15,14 +15,14 @@ services:
         - action: rebuild
           path: ../DB/
 
-  dev-backend:
+  dev-be:
     depends_on:
       - dev-db
-    container_name: dev-backend
+    container_name: dev-be
     build:
       context: ../BE/
       dockerfile: dev.Dockerfile
-    command: npm run dev
+    command: pnpm run dev
     restart: unless-stopped
     environment:
       - NODE_ENV=development
@@ -41,3 +41,26 @@ services:
           target: /app/
           ignore:
             - ../BE/node_modules
+
+  dev-fe:
+    depends_on:
+      - dev-be
+    container_name: dev-fe
+    build:
+      context: ../FE/
+      dockerfile: dev.Dockerfile
+    command: pnpm run dev
+    restart: unless-stopped
+    # environment:
+    #   - NODE_ENV=development
+    # env_file:
+    #   - ./env/.dev.FE.env
+    ports:
+      - 5000:5000
+    develop:
+      watch:
+        - action: sync
+          path: ../FE/
+          target: /app/
+          ignore:
+            - ../FE/node_modules
