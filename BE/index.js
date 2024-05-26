@@ -1,11 +1,9 @@
 import express from "express";
-import cors from "cors";
 const app = express();
-const PORT = 5001;
+const PORT = process.env.BE_PORT;
 import db from "./configs/database.js";
 
 app.use(express.json()); // 모든 express 프로젝트가 json을 사용하는것은 아니다.
-app.use(cors());
 
 app.get("/items", async (_req, res) => {
   const [rows] = await db.query("SELECT * FROM devices");
@@ -41,6 +39,6 @@ app.post("/item/create/:name", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT || 4001, () => {
   console.log(`Server is running on port ${PORT}`);
 });

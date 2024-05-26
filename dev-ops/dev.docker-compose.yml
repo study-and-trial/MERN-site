@@ -28,11 +28,8 @@ services:
       - NODE_ENV=development
     env_file:
       - ./env/.dev.BE.env
-    ports:
-      - 5001:5001
-    # client server가 뚫리면 바꿔주자.
-    # expose:
-    #   - 5001
+    expose:
+      - 4000
     # https://docs.docker.com/compose/file-watch/
     develop:
       watch:
@@ -51,12 +48,10 @@ services:
       dockerfile: dev.Dockerfile
     command: pnpm run dev
     restart: unless-stopped
-    # environment:
-    #   - NODE_ENV=development
     env_file:
       - ./env/.dev.FE.env
-    ports:
-      - 5000:5000
+    expose:
+      - 3000
     develop:
       watch:
         - action: sync
@@ -73,6 +68,6 @@ services:
     restart: unless-stopped
     ports:
       - 100:80
-      # - 443:443
+      # - 443:443 어차피 개발용 서버
     volumes:
       - ../nginx/conf.dev.d/:/etc/nginx/conf.d/

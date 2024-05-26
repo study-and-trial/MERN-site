@@ -1,9 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-const API_SERVER_SERVICE_PORT = import.meta.env
-  .VITE_APP_API_SERVER_SERVICE_PORT;
-const API_SERVER_HOST = `http://localhost:${API_SERVER_SERVICE_PORT}`;
+const BASE_URL = "api";
 
 interface Item {
   id: number;
@@ -17,7 +15,7 @@ function App() {
 
   const getItems = async () => {
     try {
-      const { data } = await axios.get(`${API_SERVER_HOST}/items`);
+      const { data } = await axios.get(`${BASE_URL}/items`);
 
       const items = data.map((item: any) => ({
         ...item,
