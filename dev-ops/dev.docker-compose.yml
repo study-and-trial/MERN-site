@@ -64,3 +64,15 @@ services:
           target: /app/
           ignore:
             - ../FE/node_modules
+
+  dev-nginx:
+    depends_on:
+      - dev-fe
+    container_name: dev-nginx
+    image: nginx:1.25.5-alpine
+    restart: unless-stopped
+    ports:
+      - 100:80
+      # - 443:443
+    volumes:
+      - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
