@@ -1,9 +1,6 @@
 services:
   prod-db:
-    container_name: prod-db
-    build:
-      context: ../DB/
-      dockerfile: prod.Dockerfile
+    image: ${DB_IMG}
     # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
     environment:
@@ -17,10 +14,7 @@ services:
   prod-be:
     depends_on:
       - prod-db
-    container_name: prod-be
-    build:
-      context: ../BE/
-      dockerfile: prod.Dockerfile
+    image: ${BE_IMG}
     command: npm run prod
     restart: unless-stopped
     environment:
@@ -38,10 +32,7 @@ services:
   prod-fe:
     depends_on:
       - prod-be
-    container_name: prod-fe
-    build:
-      context: ../FE/
-      dockerfile: prod.Dockerfile
+    image: ${FE_IMG}
     command: serve -s dist -l ${VITE_FE_PORT}
     restart: unless-stopped
     environment:
@@ -52,10 +43,7 @@ services:
   prod-nginx:
     depends_on:
       - prod-fe
-    container_name: prod-nginx
-    build:
-      context: ../nginx/
-      dockerfile: prod.Dockerfile
+    image: ${NGINX_IMG}
     # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
     ports:

@@ -1,0 +1,88 @@
+name: Build and Deploy on PR Merge to Main
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: self-hosted
+
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      SERVER_USER: ${{ secrets.SERVER_USER }}
+      SERVER_PASS: ${{ secrets.SERVER_PASS }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    steps:
+      - name: Set up repository name and short commit SHA
+        run: |
+          echo "REGISTRY=$(echo ${{ secrets.DOCKER_USERNAME }} | cut -d'@' -f1)" >> $GITHUB_ENV
+          echo "PROJECT_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | tr '/' '_')" >> $GITHUB_ENV
+          echo "COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: Build Docker images
+        run: |
+          docker compose -f dev-ops/build.docker-compose.yml build
+
+      - name: Tag and Push Docker images
+        run: |
+          docker tag localhost/prod-db:latest ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_db:${{ env.COMMIT_SHA }}
+          docker tag localhost/prod-be:latest ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_be:${{ env.COMMIT_SHA }}
+          docker tag localhost/prod-fe:latest ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_fe:${{ env.COMMIT_SHA }}
+          docker tag localhost/prod-nginx:latest ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_nginx:${{ env.COMMIT_SHA }}
+
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_db:${{ env.COMMIT_SHA }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_be:${{ env.COMMIT_SHA }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_fe:${{ env.COMMIT_SHA }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_nginx:${{ env.COMMIT_SHA }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SERVER_USER }}
+          password: ${{ env.SERVER_PASS }}
+          script: mkdir -p ~/${{ env.PROJECT_NAME }} # 디렉토리 생성
+
+      - name: Update compose-model
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SERVER_USER }}
+          password: ${{ env.SERVER_PASS }}
+          source: dev-ops/deploy.docker-compose.yml # 파일 복사
+          target: ~/${{ env.PROJECT_NAME }} # 파일 복사 대상 디렉토리
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SERVER_USER }}
+          password: ${{ env.SERVER_PASS }}
+          script: | # 이어서 script 실행
+            export DB_IMG=${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_db:${{ env.COMMIT_SHA }}
+            export BE_IMG=${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_be:${{ env.COMMIT_SHA }}
+            export FE_IMG=${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_fe:${{ env.COMMIT_SHA }}
+            export NGINX_IMG=${{ env.REGISTRY }}/${{ env.PROJECT_NAME }}_nginx:${{ env.COMMIT_SHA }}
+            cd ~/${{ env.PROJECT_NAME }}
+            mv dev-ops/deploy.docker-compose.yml deploy.docker-compose.yml # 파일 이름 변경
+            rm -rf dev-ops # 디렉토리 삭제
+            docker compose -f deploy.docker-compose.yml pull
+            docker compose -f deploy.docker-compose.yml down || true
+            docker compose -f deploy.docker-compose.yml --env-file .env up -d  # 수정된 부분 끝

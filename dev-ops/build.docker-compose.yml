@@ -1,0 +1,25 @@
+services:
+  prod-db:
+    build:
+      context: ../DB/
+      dockerfile: prod.Dockerfile
+    image: localhost/prod-db
+    # localhost prefix를 부여하는건 push하기 위해 만든 이미지라는걸 명시하는것
+
+  prod-be:
+    build:
+      context: ../BE/
+      dockerfile: prod.Dockerfile
+    image: localhost/prod-be
+
+  prod-fe:
+    build:
+      context: ../FE/
+      dockerfile: prod.Dockerfile
+    image: localhost/prod-fe
+
+  prod-nginx:
+    build:
+      context: ../nginx/
+      dockerfile: prod.Dockerfile
+    image: localhost/prod-nginx
