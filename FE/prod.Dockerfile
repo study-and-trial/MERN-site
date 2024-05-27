@@ -9,8 +9,7 @@ RUN pnpm install
 COPY . .
 RUN pnpm run build
 
-### Stage 2: Deploy with built only
+# Stage 2: Deploy with built only
 FROM node:latest
 RUN npm install -g serve
 COPY --from=build /app/dist dist
-CMD serve -s dist -l 3000

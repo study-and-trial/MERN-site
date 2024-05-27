@@ -6,8 +6,9 @@ services:
       dockerfile: prod.Dockerfile
     # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
-    env_file:
-      - ./env/.prod.DB.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     expose:
       - 3306
     volumes:
@@ -23,11 +24,16 @@ services:
     command: npm run prod
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-    env_file:
-      - ./env/.prod.BE.env
+      NODE_ENV: production
+      BE_PORT: ${BE_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+
+      DB_DATABASE: ${DB_DATABASE}
+      DB_PASS: ${DB_PASS}
+      DB_USER: ${DB_USER}
     expose:
-      - 4000
+      - ${BE_PORT}
 
   prod-fe:
     depends_on:
@@ -36,14 +42,12 @@ services:
     build:
       context: ../FE/
       dockerfile: prod.Dockerfile
-    command: npm run prod
+    command: serve -s dist -l ${VITE_FE_PORT}
     restart: unless-stopped
-    env_file:
-      - ./env/.prod.FE.env
+    environment:
+      VITE_FE_PORT: ${VITE_FE_PORT}
     expose:
-      - 3000
-    volumes:
-      - ../FE/:/app/
+      - ${VITE_FE_PORT}
 
   prod-nginx:
     depends_on:
@@ -52,6 +56,7 @@ services:
     build:
       context: ../nginx/
       dockerfile: prod.Dockerfile
+    # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
     ports:
       - 80:80
