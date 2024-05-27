@@ -2,7 +2,7 @@
 
 PROJECT_NAME="dev-fbd-site"
 CONFIG_FILE="dev.docker-compose.yml"
-UP_OPTIONS="--build --watch"
+UP_OPTIONS="--build"
 
 
 choose_action() {

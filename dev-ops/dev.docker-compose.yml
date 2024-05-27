@@ -10,10 +10,13 @@ services:
       - ./env/.dev.DB.env
     expose:
       - 3306
-    develop:
-      watch:
-        - action: rebuild
-          path: ../DB/
+    volumes:
+      # 데이터베이스는 보존되어야 개발이 편하다.
+      - db-data:/var/lib/mysql
+    # develop:
+    #   watch:
+    #     - action: rebuild
+    #       path: ../DB/
 
   dev-be:
     depends_on:
@@ -22,22 +25,26 @@ services:
     build:
       context: ../BE/
       dockerfile: dev.Dockerfile
-    command: pnpm run dev
+    command: npm run dev
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
       - ./env/.dev.BE.env
+    ports:
+      - 4000:4000
     expose:
       - 4000
+    volumes:
+      - ../BE/:/app/
     # https://docs.docker.com/compose/file-watch/
-    develop:
-      watch:
-        - action: sync
-          path: ../BE/
-          target: /app/
-          ignore:
-            - ../BE/node_modules
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ../BE/
+    #       target: /app/
+    #       ignore:
+    #         - ../BE/node_modules
 
   dev-fe:
     depends_on:
@@ -46,19 +53,21 @@ services:
     build:
       context: ../FE/
       dockerfile: dev.Dockerfile
-    command: pnpm run dev
+    command: npm run dev
     restart: unless-stopped
     env_file:
       - ./env/.dev.FE.env
     expose:
       - 3000
-    develop:
-      watch:
-        - action: sync
-          path: ../FE/
-          target: /app/
-          ignore:
-            - ../FE/node_modules
+    volumes:
+      - ../FE/:/app/
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ../FE/
+    #       target: /app/
+    #       ignore:
+    #         - ../FE/node_modules
 
   dev-nginx:
     depends_on:
@@ -71,3 +80,6 @@ services:
       # - 443:443 어차피 개발용 서버
     volumes:
       - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
+
+volumes:
+  db-data:
