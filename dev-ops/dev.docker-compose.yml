@@ -38,9 +38,9 @@ services:
       DB_PASS: ${DB_PASS}
       DB_USER: ${DB_USER}
     ports:
-      - 4000:4000
+      - ${BE_PORT}:${BE_PORT}
     expose:
-      - 4000
+      - ${BE_PORT}
     volumes:
       - ../BE/:/app/
     # https://docs.docker.com/compose/file-watch/
@@ -64,7 +64,7 @@ services:
     environment:
       VITE_FE_PORT: ${VITE_FE_PORT}
     expose:
-      - 3000
+      - ${VITE_FE_PORT}
     volumes:
       - ../FE/:/app/
     # develop:
@@ -84,7 +84,7 @@ services:
       dockerfile: dev.Dockerfile
     restart: unless-stopped
     ports:
-      - 100:80
+      - ${NGINX_PORT}:80
       # - 443:443 어차피 개발용 서버
     volumes:
       - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
