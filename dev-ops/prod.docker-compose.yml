@@ -1,0 +1,61 @@
+services:
+  prod-db:
+    container_name: prod-db
+    build:
+      context: ../DB/
+      dockerfile: prod.Dockerfile
+    # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
+    restart: unless-stopped
+    env_file:
+      - ./env/.prod.DB.env
+    expose:
+      - 3306
+    volumes:
+      - db-data:/var/lib/mysql
+
+  prod-be:
+    depends_on:
+      - prod-db
+    container_name: prod-be
+    build:
+      context: ../BE/
+      dockerfile: prod.Dockerfile
+    command: npm run prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./env/.prod.BE.env
+    expose:
+      - 4000
+
+  prod-fe:
+    depends_on:
+      - prod-be
+    container_name: prod-fe
+    build:
+      context: ../FE/
+      dockerfile: prod.Dockerfile
+    command: npm run prod
+    restart: unless-stopped
+    env_file:
+      - ./env/.prod.FE.env
+    expose:
+      - 3000
+    volumes:
+      - ../FE/:/app/
+
+  prod-nginx:
+    depends_on:
+      - prod-fe
+    container_name: prod-nginx
+    build:
+      context: ../nginx/
+      dockerfile: prod.Dockerfile
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+
+volumes:
+  db-data:

@@ -73,7 +73,9 @@ services:
     depends_on:
       - dev-fe
     container_name: dev-nginx
-    image: nginx:1.25.5-alpine
+    build:
+      context: ../nginx/
+      dockerfile: dev.Dockerfile
     restart: unless-stopped
     ports:
       - 100:80
