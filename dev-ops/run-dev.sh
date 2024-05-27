@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_NAME="dev-fbd-site"
+PROJECT_NAME="dev-mern-site"
 CONFIG_FILE="dev.docker-compose.yml"
 UP_OPTIONS="--build"
 ENV_FILE="./env/.dev.env"
