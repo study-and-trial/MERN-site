@@ -6,8 +6,9 @@ services:
       dockerfile: dev.Dockerfile
     # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
     restart: unless-stopped
-    env_file:
-      - ./env/.dev.DB.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     expose:
       - 3306
     volumes:
@@ -28,9 +29,14 @@ services:
     command: npm run dev
     restart: unless-stopped
     environment:
-      - NODE_ENV=development
-    env_file:
-      - ./env/.dev.BE.env
+      NODE_ENV: development
+      BE_PORT: ${BE_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+
+      DB_DATABASE: ${DB_DATABASE}
+      DB_PASS: ${DB_PASS}
+      DB_USER: ${DB_USER}
     ports:
       - 4000:4000
     expose:
@@ -55,8 +61,8 @@ services:
       dockerfile: dev.Dockerfile
     command: npm run dev
     restart: unless-stopped
-    env_file:
-      - ./env/.dev.FE.env
+    environment:
+      VITE_FE_PORT: ${VITE_FE_PORT}
     expose:
       - 3000
     volumes:

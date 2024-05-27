@@ -3,6 +3,7 @@
 PROJECT_NAME="dev-fbd-site"
 CONFIG_FILE="dev.docker-compose.yml"
 UP_OPTIONS="--build"
+ENV_FILE="./env/.dev.env"
 
 
 choose_action() {
@@ -17,7 +18,7 @@ choose_action() {
 
   case $choice in
     1)
-      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE up $UP_OPTIONS
+      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE --env-file $ENV_FILE up $UP_OPTIONS
       choose_action
       ;;
     2)
@@ -26,7 +27,7 @@ choose_action() {
       ;;
     3)
       docker compose --project-name $PROJECT_NAME down
-      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE up $UP_OPTIONS
+      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE --env-file $ENV_FILE up $UP_OPTIONS
       choose_action
       ;;
     4)
@@ -36,7 +37,7 @@ choose_action() {
       choose_action
       ;;
     5)
-      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE watch
+      docker compose --project-name $PROJECT_NAME --file $CONFIG_FILE --env-file $ENV_FILE watch
       choose_action
       ;;
     *)
