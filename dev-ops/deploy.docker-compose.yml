@@ -10,6 +10,8 @@ services:
       - 3306
     volumes:
       - db-data:/var/lib/mysql
+    networks:
+      - web-proxy-server
 
   prod-be:
     depends_on:
@@ -28,6 +30,8 @@ services:
       DB_USER: ${DB_USER}
     expose:
       - ${BE_PORT}
+    networks:
+      - web-proxy-server
 
   prod-fe:
     depends_on:
@@ -39,16 +43,11 @@ services:
       VITE_FE_PORT: ${VITE_FE_PORT}
     expose:
       - ${VITE_FE_PORT}
-
-  prod-nginx:
-    depends_on:
-      - prod-fe
-    image: ${NGINX_IMG}
-    # command: 공식 이미지를 사용하는데, 이미지에 명세이 이미 있다.
-    restart: unless-stopped
-    ports:
-      - 80:80
-      - 443:443
+    networks:
+      - web-proxy-server
 
 volumes:
   db-data:
+networks:
+  web-proxy-server:
+    external: true
